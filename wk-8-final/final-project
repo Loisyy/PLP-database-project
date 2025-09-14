@@ -1,0 +1,80 @@
+-- ecommerce_database.sql
+-- Database: ECommerceDB
+-- Assignment: Database Design and Normalization
+
+-- 1. Create Database
+CREATE DATABASE IF NOT EXISTS ECommerceDB;
+USE ECommerceDB;
+
+------------------------------------------------------
+-- 2. Customers Table
+------------------------------------------------------
+CREATE TABLE IF NOT EXISTS Customers (
+    CustomerID INT PRIMARY KEY AUTO_INCREMENT,
+    FirstName VARCHAR(50) NOT NULL,
+    LastName VARCHAR(50) NOT NULL,
+    Email VARCHAR(100) UNIQUE NOT NULL
+);
+
+------------------------------------------------------
+-- 3. Products Table
+------------------------------------------------------
+CREATE TABLE IF NOT EXISTS Products (
+    ProductID INT PRIMARY KEY AUTO_INCREMENT,
+    ProductName VARCHAR(100) NOT NULL,
+    Price DECIMAL(10,2) NOT NULL,
+    Stock INT DEFAULT 0
+);
+
+------------------------------------------------------
+-- 4. Orders Table
+------------------------------------------------------
+CREATE TABLE IF NOT EXISTS Orders (
+    OrderID INT PRIMARY KEY AUTO_INCREMENT,
+    CustomerID INT,
+    OrderDate DATE NOT NULL,
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+);
+
+------------------------------------------------------
+-- 5. OrderDetails Table (Many-to-Many between Orders and Products)
+------------------------------------------------------
+CREATE TABLE IF NOT EXISTS OrderDetails (
+    OrderID INT,
+    ProductID INT,
+    Quantity INT NOT NULL,
+    PRIMARY KEY (OrderID, ProductID),
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+);
+
+------------------------------------------------------
+-- 6. Sample Data (Optional)
+------------------------------------------------------
+-- Customers
+INSERT INTO Customers (FirstName, LastName, Email) VALUES
+('John', 'Doe', 'john@example.com'),
+('Jane', 'Smith', 'jane@example.com'),
+('Emily', 'Clark', 'emily@example.com');
+
+-- Products
+INSERT INTO Products (ProductName, Price, Stock) VALUES
+('Laptop', 1200.00, 10),
+('Mouse', 25.00, 50),
+('Keyboard', 45.00, 30),
+('Tablet', 300.00, 20),
+('Phone', 800.00, 15);
+
+-- Orders
+INSERT INTO Orders (CustomerID, OrderDate) VALUES
+(1, '2025-09-01'),
+(2, '2025-09-02'),
+(3, '2025-09-03');
+
+-- OrderDetails
+INSERT INTO OrderDetails (OrderID, ProductID, Quantity) VALUES
+(1, 1, 1), -- John buys Laptop
+(1, 2, 2), -- John buys 2 Mice
+(2, 4, 1), -- Jane buys Tablet
+(2, 3, 1), -- Jane buys Keyboard
+(3, 5, 1); -- Emily buys Phone
